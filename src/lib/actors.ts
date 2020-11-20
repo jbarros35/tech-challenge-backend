@@ -20,8 +20,9 @@ export async function remove(id: number): Promise<boolean> {
 }
 
 /** @returns the ID that was created */
-export async function create(name: string): Promise<number> {
-  const [ id ] = await (knex.into('actor').insert({ name }))
+export async function create(name: string, bio: string, birthDate: string): Promise<number> {
+  const bornAt = new Date(birthDate)
+  const [ id ] = await (knex.into('actor').insert({ name, bio, bornAt }))
   return id
 }
 

@@ -22,15 +22,18 @@ const validateParamsId: RouteOptionsValidate = {
   })
 }
 
-interface PayloadGenre {
-  name: string
+interface PayloadActor {
+  name: string,
+  bio: string,
+  bornAt: string
 }
-const validatePayloadGenre: RouteOptionsResponseSchema = {
+const validatePayloadActor: RouteOptionsResponseSchema = {
   payload: joi.object({
     name: joi.string().required(),
+    bio: joi.string().required(),
+    bornAt: joi.string().required()
   })
 }
-
 
 export const actorRoutes: ServerRoute[] = [{
   method: 'GET',
@@ -40,7 +43,7 @@ export const actorRoutes: ServerRoute[] = [{
   method: 'POST',
   path: '/actors',
   handler: post,
-  options: { validate: validatePayloadGenre },
+  options: { validate: validatePayloadActor },
 },{
   method: 'GET',
   path: '/actors/{id}',
@@ -50,7 +53,7 @@ export const actorRoutes: ServerRoute[] = [{
   method: 'PUT',
   path: '/actors/{id}',
   handler: put,
-  options: { validate: {...validateParamsId, ...validatePayloadGenre} },
+  options: { validate: {...validateParamsId, ...validatePayloadActor} },
 },{
   method: 'DELETE',
   path: '/actors/{id}',
@@ -71,10 +74,11 @@ async function get(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lif
 }
 
 async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
-  const { name } = (req.payload as PayloadGenre)
-
+  const { name } = (req.payload as PayloadActor)
+  const { bio } = (req.payload as PayloadActor)
+  const { bornAt } = (req.payload as PayloadActor)
   try {
-    const id = await actors.create(name)
+    const id = await actors.create(name, bio, bornAt)
     const result = {
       id,
       path: `${req.route.path}/${id}`
@@ -82,6 +86,7 @@ async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lif
     return h.response(result).code(201)
   }
   catch(er: unknown){
+    console.log(er);
     if(!isHasCode(er) || er.code !== 'ER_DUP_ENTRY') throw er
     return Boom.conflict()
   }
@@ -89,7 +94,7 @@ async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lif
 
 async function put(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
   const { id } = (req.params as ParamsId)
-  const { name } = (req.payload as PayloadGenre)
+  const { name } = (req.payload as PayloadActor)
 
   try {
     return await actors.update(id, name) ? h.response().code(204) : Boom.notFound()

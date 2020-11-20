@@ -165,20 +165,24 @@ describe('lib', () => describe('actor', () => {
     it('insert one row into table `actor`', async ({context}: Flags) => {
       if(!isContext(context)) throw TypeError()
       const anyName = 'any-name'
+      const bio = 'actor biography'
+      const bornAt = '1965-01-07T18:25:43.511Z'
       context.stub.knex_insert.resolves([])
 
-      await create(anyName)
+      await create(anyName, bio, bornAt)
       sinon.assert.calledOnceWithExactly(context.stub.knex_into, 'actor')
-      sinon.assert.calledOnceWithExactly(context.stub.knex_insert, { name: anyName })
+      sinon.assert.calledOnceWithExactly(context.stub.knex_insert, { name: anyName, bio: bio, bornAt: bornAt })
     })
 
     it('returns the `id` created for the new row', async ({context}: Flags) => {
       if(!isContext(context)) throw TypeError()
       const anyName = 'any-name'
       const anyId = 123
+      const bio = 'biography'
+      const bornAt = '1965-01-07T18:25:43.511Z'
       context.stub.knex_insert.resolves([anyId])
 
-      const result = await create(anyName)
+      const result = await create(anyName, bio, bornAt)
       expect(result).to.be.number()
       expect(result).equals(anyId)
     })

@@ -172,7 +172,7 @@ describe('plugin', () => describe('actor', () => {
       expect(response.statusCode).equals(400)
     })
 
-    it('validates payload matches `genre`', async ({ context }: Flags) => {
+    it('validates payload matches `actor`', async ({ context }: Flags) => {
       if(!isContext(context)) throw TypeError()
       const opts: Hapi.ServerInjectOptions = { method, url, payload: {'unexpected': 'object'}}
 
