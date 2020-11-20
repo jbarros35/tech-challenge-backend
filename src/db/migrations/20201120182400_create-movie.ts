@@ -1,9 +1,8 @@
 import * as Knex from 'knex'
 
-
 /**
  * Create movie table
- * @param knex 
+ * @param knex
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.raw(`

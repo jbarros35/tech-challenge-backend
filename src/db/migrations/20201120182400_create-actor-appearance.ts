@@ -1,12 +1,11 @@
 import * as Knex from 'knex'
 
-
 /**
  * Create actor table
- * @param knex 
+ * @param knex
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw('SET foreign_key_checks = 0');
+  await knex.raw('SET foreign_key_checks = 0')
   await knex.schema.raw(`
     CREATE TABLE actor_appearance (
       actor_id    INT(10) UNSIGNED NOT NULL,
@@ -23,7 +22,7 @@ export async function up(knex: Knex): Promise<void> {
         ON UPDATE CASCADE
         ON DELETE CASCADE
   )ENGINE=INNODB;`)
-  await knex.raw('SET foreign_key_checks = 1');
+  await knex.raw('SET foreign_key_checks = 1')
 }
 
 export async function down(knex: Knex): Promise<void> {
