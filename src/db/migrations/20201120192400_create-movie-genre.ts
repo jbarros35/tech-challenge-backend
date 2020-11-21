@@ -7,16 +7,15 @@ import * as Knex from 'knex'
 export async function up(knex: Knex): Promise<void> {
   await knex.raw('SET foreign_key_checks = 0')
   await knex.schema.raw(`
-    CREATE TABLE actor_appearance (
-      actorId    INT(10) UNSIGNED NOT NULL,
+    CREATE TABLE movie_genre (
+      genreId    INT(10) UNSIGNED NOT NULL,
       movieId    INT(10) UNSIGNED NOT NULL,
-      characterName  VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_actor
-      FOREIGN KEY (actorId) 
-      REFERENCES actor(id)
+    CONSTRAINT fk_genre_id
+      FOREIGN KEY (genreId) 
+      REFERENCES genre(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT fk_movie
+    CONSTRAINT fk_movie_genre_id
       FOREIGN KEY (movieId) 
       REFERENCES movie(id)
         ON UPDATE CASCADE
@@ -26,5 +25,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.raw('DROP TABLE actor;')
+  await knex.schema.raw('DROP TABLE movie_genre;')
 }

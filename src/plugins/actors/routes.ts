@@ -23,15 +23,27 @@ const validateParamsId: RouteOptionsValidate = {
 }
 
 interface PayloadActor {
-  name: string,
-  bio: string,
+  name: string
+  bio: string
   bornAt: string
+}
+interface PayloadActorAppearance {
+  actorId: number
+  movieId: number
+  characterName: string
 }
 const validatePayloadActor: RouteOptionsResponseSchema = {
   payload: joi.object({
     name: joi.string().required(),
     bio: joi.string().required(),
     bornAt: joi.string().required()
+  })
+}
+const validatePayloadActorAppearance: RouteOptionsResponseSchema = {
+  payload: joi.object({
+    actorId: joi.number().required(),
+    movieId: joi.number().required(),
+    characterName: joi.string().required()
   })
 }
 
@@ -44,6 +56,16 @@ export const actorRoutes: ServerRoute[] = [{
   path: '/actors',
   handler: post,
   options: { validate: validatePayloadActor },
+},{
+  method: 'POST',
+  path: '/actorsAppearance',
+  handler: postAppearance,
+  options: { validate: validatePayloadActorAppearance },
+},{
+  method: 'GET',
+  path: '/actorsAppearance/{id}',
+  handler: getAppearances,
+  options: { validate: validateParamsId },
 },{
   method: 'GET',
   path: '/actors/{id}',
@@ -73,6 +95,13 @@ async function get(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lif
   return found || Boom.notFound()
 }
 
+async function getAppearances(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
+  const { id } = (req.params as ParamsId)
+
+  const found = await actors.findActorAppearances(id)
+  return found || Boom.notFound()
+}
+
 async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
   const { name } = (req.payload as PayloadActor)
   const { bio } = (req.payload as PayloadActor)
@@ -86,7 +115,24 @@ async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lif
     return h.response(result).code(201)
   }
   catch(er: unknown){
-    console.log(er);
+    if(!isHasCode(er) || er.code !== 'ER_DUP_ENTRY') throw er
+    return Boom.conflict()
+  }
+}
+
+async function postAppearance(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
+  const { actorId } = (req.payload as PayloadActorAppearance)
+  const { movieId } = (req.payload as PayloadActorAppearance)
+  const { characterName } = (req.payload as PayloadActorAppearance)
+  try {
+    const id = await actors.createAppearance(actorId, movieId, characterName)
+    const result = {
+      id,
+      path: `${req.route.path}/${id}`
+    }
+    return h.response(result).code(201)
+  }
+  catch(er: unknown){
     if(!isHasCode(er) || er.code !== 'ER_DUP_ENTRY') throw er
     return Boom.conflict()
   }
@@ -95,9 +141,10 @@ async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lif
 async function put(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
   const { id } = (req.params as ParamsId)
   const { name } = (req.payload as PayloadActor)
-
+  const { bio } = (req.payload as PayloadActor)
+  const { bornAt } = (req.payload as PayloadActor)
   try {
-    return await actors.update(id, name) ? h.response().code(204) : Boom.notFound()
+    return await actors.update(id, name, bio, bornAt) ? h.response().code(204) : Boom.notFound()
   }
   catch(er: unknown){
     if(!isHasCode(er) || er.code !== 'ER_DUP_ENTRY') throw er
