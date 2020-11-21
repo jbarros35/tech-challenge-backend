@@ -40,8 +40,10 @@ const validatePayloadActor: RouteOptionsResponseSchema = {
   })
 }
 const validatePayloadActorAppearance: RouteOptionsResponseSchema = {
-  payload: joi.object({
-    actorId: joi.number().required(),
+  params: joi.object({
+    id: joi.number().required().min(1),
+  }),
+  payload: joi.object({    
     movieId: joi.number().required(),
     characterName: joi.string().required()
   })
@@ -58,7 +60,7 @@ export const actorRoutes: ServerRoute[] = [{
   options: { validate: validatePayloadActor },
 },{
   method: 'POST',
-  path: '/actorsAppearance',
+  path: '/actorsAppearance/{id}',
   handler: postAppearance,
   options: { validate: validatePayloadActorAppearance },
 },{
@@ -151,14 +153,14 @@ async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lif
 }
 
 async function postAppearance(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
-  const { actorId } = (req.payload as PayloadActorAppearance)
+  const { id } = (req.params as ParamsId)
   const { movieId } = (req.payload as PayloadActorAppearance)
   const { characterName } = (req.payload as PayloadActorAppearance)
   try {
-    const id = await actors.createAppearance(actorId, movieId, characterName)
+    const appId = await actors.createAppearance(id, movieId, characterName)
     const result = {
-      id,
-      path: `${req.route.path}/${id}`
+      appId,
+      path: `${req.route.path}/${appId}`
     }
     return h.response(result).code(201)
   }
