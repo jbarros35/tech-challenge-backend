@@ -5,10 +5,10 @@ import sinon from 'sinon'
 export const lab = script()
 const { beforeEach, before, after, afterEach, describe, it } = lab
 
-import { list, find, remove, create, update } from './actors'
+import { list, find, remove, create, update } from './movies'
 import { knex } from '../util/knex'
 
-describe('lib', () => describe('actor', () => {
+describe('lib', () => describe('movie', () => {
   const sandbox = Object.freeze(sinon.createSandbox())
 
   const isContext = (value: unknown): value is Context => {
@@ -56,11 +56,11 @@ describe('lib', () => describe('actor', () => {
 
   describe('list', () => {
 
-    it('returns rows from table `actor`', async ({context}: Flags) => {
+    it('returns rows from table `movie`', async ({context}: Flags) => {
       if(!isContext(context)) throw TypeError()
 
       await list()
-      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'actor')
+      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'movie')
       sinon.assert.calledOnce(context.stub.knex_select)
     })
 
@@ -68,12 +68,12 @@ describe('lib', () => describe('actor', () => {
 
   describe('find', () => {
 
-    it('returns one row from table `actor`, by `id`', async ({context}: Flags) => {
+    it('returns one row from table `movie`, by `id`', async ({context}: Flags) => {
       if(!isContext(context)) throw TypeError()
       const anyId = 123
 
       await find(anyId)
-      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'actor')
+      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'movie')
       sinon.assert.calledOnceWithExactly(context.stub.knex_where, { id: anyId })
       sinon.assert.calledOnce(context.stub.knex_first)
     })
@@ -82,13 +82,13 @@ describe('lib', () => describe('actor', () => {
 
   describe('remove', () => {
 
-    it('removes one row from table `actor`, by `id`', async ({context}: Flags) => {
+    it('removes one row from table `movie`, by `id`', async ({context}: Flags) => {
       if(!isContext(context)) throw TypeError()
       const anyId = 123
       context.stub.knex_delete.resolves()
 
       await remove(anyId)
-      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'actor')
+      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'movie')
       sinon.assert.calledOnceWithExactly(context.stub.knex_where, { id: anyId })
       sinon.assert.calledOnce(context.stub.knex_delete)
     })
@@ -108,16 +108,17 @@ describe('lib', () => describe('actor', () => {
 
   describe('update', () => {
 
-    it('updates one row from table `actor`, by `id`', async ({context}: Flags) => {
+    it('updates one row from table `movie`, by `id`', async ({context}: Flags) => {
       const anyId = 123
       if(!isContext(context)) throw TypeError()
       const anyName = 'any-name'
-      const bio = 'actor biography'
-      const bornAt = '1965-01-07T18:25:43.511Z'
+      const synopsis = 'movie synopsis'
+      const releasedAt = '2020-01-07T00:00:00.000Z'
+      const runtime = 180
       context.stub.knex_update.resolves()
 
-      await update(anyId, anyName, bio, bornAt)
-      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'actor')
+      await update(anyId, anyName, synopsis, releasedAt, runtime)
+      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'movie')
       sinon.assert.calledOnceWithExactly(context.stub.knex_where, { id: anyId })
       sinon.assert.calledOnceWithExactly(context.stub.knex_update, { name: anyName })
     })
@@ -126,12 +127,13 @@ describe('lib', () => describe('actor', () => {
       it(`returns ${!!rows} when (${rows}) row is found and deleted`, async ({context}: Flags) => {
         if(!isContext(context)) throw TypeError()
         const anyId = 123
-        const anyName = 'any-name'
-        const bio = 'actor biography'
-        const bornAt = '1965-01-07T18:25:43.511Z'
+        const anyName = 'movie-name'
+        const synopsis = 'movie synopsis'
+        const releasedAt = '2020-01-07T00:00:00.000Z'
+        const runtime = 180
         context.stub.knex_update.resolves(rows)
 
-        const result = await update(anyId, anyName, bio, bornAt)
+        const result = await update(anyId, anyName, synopsis, releasedAt, runtime)
         expect(result).to.be.boolean()
         expect(result).equals(!!rows)
       }))
@@ -140,13 +142,13 @@ describe('lib', () => describe('actor', () => {
 
   describe('remove', () => {
 
-    it('removes one row from table `actor`, by `id`', async ({context}: Flags) => {
+    it('removes one row from table `movie`, by `id`', async ({context}: Flags) => {
       if(!isContext(context)) throw TypeError()
       const anyId = 123
       context.stub.knex_delete.resolves()
 
       await remove(anyId)
-      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'actor')
+      sinon.assert.calledOnceWithExactly(context.stub.knex_from, 'movie')
       sinon.assert.calledOnceWithExactly(context.stub.knex_where, { id: anyId })
       sinon.assert.calledOnce(context.stub.knex_delete)
     })
@@ -165,28 +167,29 @@ describe('lib', () => describe('actor', () => {
   })
 
   describe('create', () => {
-
-    it('insert one row into table `actor`', async ({context}: Flags) => {
+    it('insert one row into table `movie`', async ({context}: Flags) => {
       if(!isContext(context)) throw TypeError()
-      const anyName = 'any-name'
-      const bio = 'actor biography'
-      const bornAt = '1965-01-07T18:25:43.511Z'
+      const anyName = 'movie-name'
+      const synopsis = 'movie synopsis'
+      const releasedAt = '2020-01-07T00:00:00.000Z'
+      const runtime = 180
       context.stub.knex_insert.resolves([])
 
-      await create(anyName, bio, bornAt)
-      sinon.assert.calledOnceWithExactly(context.stub.knex_into, 'actor')
-      sinon.assert.calledOnceWithExactly(context.stub.knex_insert, { name: anyName, bio: bio, bornAt: bornAt })
+      await create(anyName, synopsis, releasedAt, runtime)
+      sinon.assert.calledOnceWithExactly(context.stub.knex_into, 'movie')
+      sinon.assert.calledOnceWithExactly(context.stub.knex_insert, { name: anyName, synopsis: synopsis, releasedAt: releasedAt, runtime: runtime })
     })
 
     it('returns the `id` created for the new row', async ({context}: Flags) => {
       if(!isContext(context)) throw TypeError()
-      const anyName = 'any-name'
+      const anyName = 'movie-name'
       const anyId = 123
-      const bio = 'biography'
-      const bornAt = '1965-01-07T18:25:43.511Z'
+      const synopsis = 'movie synopsis'
+      const releasedAt = '2020-01-07T00:00:00.000Z'
+      const runtime = 180
       context.stub.knex_insert.resolves([anyId])
 
-      const result = await create(anyName, bio, bornAt)
+      const result = await create(anyName, synopsis, releasedAt, runtime)
       expect(result).to.be.number()
       expect(result).equals(anyId)
     })
