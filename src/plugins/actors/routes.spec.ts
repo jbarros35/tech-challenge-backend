@@ -179,7 +179,7 @@ describe('plugin', () => describe('actor', () => {
 
     it('returns HTTP 201, with the `id` and `path` to the row created', async ({ context }: Flags) => {
       if(!isContext(context)) throw TypeError()
-      const payload = {'name': 'any-name'}
+      const payload = {'name': 'actor name', 'bio': 'biography', 'bornAt': new Date('1946-08-02')}
       const opts: Hapi.ServerInjectOptions = { method, url, payload }
       const anyResult = 123
       context.stub.lib_create.resolves(anyResult)
@@ -196,8 +196,8 @@ describe('plugin', () => describe('actor', () => {
 
   })
 
-  describe('POST /actorsAppearance', () => {
-    const [method, url] = ['POST', '/actorsAppearance']
+  describe('GET /actorsAppearance', () => {
+    const [method, url] = ['GET', '/actorsAppearance']
 
     it('validates payload is not empty', async ({ context }: Flags) => {
       if(!isContext(context)) throw TypeError()

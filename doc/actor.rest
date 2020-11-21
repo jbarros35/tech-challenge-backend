@@ -6,6 +6,11 @@ GET {{baseUrl}}
 
 ###
 
+# @name getOne
+GET {{baseUrl}}/{{id}}
+
+###
+
 # @name create
 POST {{baseUrl}}
 Content-Type: application/json
