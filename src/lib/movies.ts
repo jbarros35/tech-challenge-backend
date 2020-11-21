@@ -29,6 +29,12 @@ export async function create(name: string, synopsis: string, releasedAtStr: stri
   return id
 }
 
+/** @returns the ID that was created */
+export async function setGender(movieId: number, genreId: number): Promise<boolean> {
+  const [ id ] = await (knex.into('movie_genre').insert({ movieId, genreId }))
+  return id == 0
+}
+
 /** @returns whether the ID was actually found */
 export async function update(id: number, name: string, synopsis: string, releasedAt: string, runtime: number): Promise<boolean>  {
   const release = new Date(releasedAt)
