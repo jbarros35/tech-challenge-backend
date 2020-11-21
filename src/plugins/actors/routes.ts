@@ -68,6 +68,11 @@ export const actorRoutes: ServerRoute[] = [{
   options: { validate: validateParamsId },
 },{
   method: 'GET',
+  path: '/actorsFavouriteGenre/{id}',
+  handler: getFavouriteGenre,
+  options: { validate: validateParamsId },
+},{
+  method: 'GET',
   path: '/actorsCharacters/{id}',
   handler: getCharacters,
   options: { validate: validateParamsId },
@@ -98,6 +103,19 @@ async function get(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lif
 
   const found = await actors.find(id)
   return found || Boom.notFound()
+}
+
+async function getFavouriteGenre(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
+  const { id } = (req.params as ParamsId)
+  try {
+    const found = await actors.findActorFavouriteGenre(id)
+    return found || Boom.notFound()
+  }
+  catch (er: unknown) {
+    console.log(er)
+    if(!isHasCode(er) || er.code !== 'ER_DUP_ENTRY') throw er
+    return Boom.conflict()
+  }
 }
 
 async function getAppearances(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
