@@ -40,10 +40,10 @@ POST {{baseUrl}}/genre/{{id}}
 Content-Type: application/json
 
 {
-  "genreId": 2
+  "genreId": 1
 }
 
-
-# @name remove DELETE {{baseUrl}}/{{id}}
+# @name remove 
+DELETE {{baseUrl}}/{{id}}
 
 ###

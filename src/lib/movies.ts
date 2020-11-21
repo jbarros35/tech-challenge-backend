@@ -30,7 +30,7 @@ export async function create(name: string, synopsis: string, releasedAtStr: stri
 }
 
 /** @returns the ID that was created */
-export async function setGender(movieId: number, genreId: number): Promise<boolean> {
+export async function setGenre(movieId: number, genreId: number): Promise<boolean> {
   const [ id ] = await (knex.into('movie_genre').insert({ movieId, genreId }))
   return id == 0
 }

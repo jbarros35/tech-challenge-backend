@@ -43,7 +43,7 @@ const validatePayloadActorAppearance: RouteOptionsResponseSchema = {
   params: joi.object({
     id: joi.number().required().min(1),
   }),
-  payload: joi.object({    
+  payload: joi.object({
     movieId: joi.number().required(),
     characterName: joi.string().required()
   })
@@ -79,6 +79,7 @@ export const actorRoutes: ServerRoute[] = [{
   handler: getCharacters,
   options: { validate: validateParamsId },
 },{
+  method: 'GET',
   path: '/actors/{id}',
   handler: get,
   options: { validate: validateParamsId },
@@ -125,17 +126,6 @@ async function getAppearances(req: Request, _h: ResponseToolkit, _err?: Error): 
   return found || Boom.notFound()
 }
 
-async function getFavouriteGenre(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
-  const { id } = (req.params as ParamsId)
-  try {
-    const found = await actors.findActorFavouriteGenre(id)
-    return found || Boom.notFound()
-  }
-  catch (er: unknown) {
-    console.log(er)
-    if(!isHasCode(er) || er.code !== 'ER_DUP_ENTRY') throw er
-    return Boom.conflict()
-  }
 async function getCharacters(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
   const { id } = (req.params as ParamsId)
 

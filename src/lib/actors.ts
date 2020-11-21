@@ -76,20 +76,6 @@ export function findActorCharacters(actorId: number): Promise<Character[]> {
   return movieAppearances
 }
 
-export function findActorFavouriteGenre(actorId: number): Promise<FavouriteGenre[]> {
-  const movieAppearances = (knex('movie')
-    .join('movie_genre', 'movie.id', 'movie_genre.movieId')
-    .join('actor_appearance', 'actor_appearance.actorId', 'actor_appearance.movieId')
-    .join('actor', 'actor.id', 'actor_appearance.actorId')
-    .join('genre', 'genre.id', 'movie_genre.genreId')
-    .select('genre.name', knex.raw('count(movie.id) as count'))
-    .where({'actor.id': actorId})
-    .groupBy('genre.name')
-    .orderBy('count', 'desc')
-    .limit(1))
-  return movieAppearances
-}
-
 /** @returns whether the ID was actually found */
 export async function update(id: number, name: string, bio: string, birthDate: string): Promise<boolean>  {
   const bornAt = new Date(birthDate)

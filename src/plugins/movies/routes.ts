@@ -40,9 +40,11 @@ const validatePayloadMovie: RouteOptionsResponseSchema = {
     runtime: joi.number().required().min(1)
   })
 }
-const validatePayloadGender: RouteOptionsResponseSchema = {
+const validatePayloadGenre: RouteOptionsResponseSchema = {
+  params: joi.object({
+    id: joi.number().required().min(1),
+  }),
   payload: joi.object({
-    movieId: joi.number().required(),
     genreId: joi.number().required(),
   })
 }
@@ -57,9 +59,9 @@ export const movieRoutes: ServerRoute[] = [{
   options: { validate: validatePayloadMovie },
 },{
   method: 'POST',
-  path: '/movies/gender',
-  handler: associateGender,
-  options: { validate: validatePayloadGender },
+  path: '/movies/genre/{id}',
+  handler: associateGenre,
+  options: { validate: validatePayloadGenre },
 },{
   method: 'GET',
   path: '/movies/{id}',
@@ -109,14 +111,14 @@ async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lif
   }
 }
 
-async function associateGender(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
-  const { movieId } = (req.payload as PayloadGenre)
+async function associateGenre(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
+  const { id } = (req.params as ParamsId)
   const { genreId } = (req.payload as PayloadGenre)
   try {
-    const id = await movies.setGender(genreId, movieId)
+    const resultId = await movies.setGenre(genreId, id)
     const result = {
-      id,
-      path: `${req.route.path}/${id}`
+      resultId,
+      path: `${req.route.path}/${resultId}`
     }
     return h.response(result).code(201)
   }
