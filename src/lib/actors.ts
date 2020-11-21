@@ -37,7 +37,15 @@ export async function createAppearance(actorId: number, movieId: number, charact
 export function findActorAppearances(actorId: number): Promise<any> {
   const movieAppearances = (knex('actor_appearance')
     .join('movie', 'actor_appearance.movieId', 'movie.id')
-    .select('movie.id', 'movie.name', 'actor_appearance.characterName')
+    .select('movie.id', 'movie.name')
+    .where({actorId: actorId}))
+  return movieAppearances
+}
+
+export function findActorCharacters(actorId: number): Promise<any> {
+  const movieAppearances = (knex('actor_appearance')
+    .join('movie', 'actor_appearance.movieId', 'movie.id')
+    .select('actor_appearance.characterName')
     .where({actorId: actorId}))
   return movieAppearances
 }
