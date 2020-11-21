@@ -1,0 +1,35 @@
+@baseUrl=http://localhost:8080/movies
+
+# @name getAll GET {{baseUrl}}
+
+###
+
+# @name create POST {{baseUrl}} Content-Type: application/json
+
+{
+    "id": 2,
+    "path": "/movies/2"
+}
+
+###
+
+# @name update PUT {{baseUrl}}/{{id}}
+
+{
+  "name": "Movie 2",
+  "synopsis": "Hello movie",
+  "releaseAt": "2020-01-07T18:25:43.511Z",
+  "runtime": 180
+}
+
+# @name associate to gender POST {{baseUrl}}/{{id}}
+
+{
+  "movieId": 2,
+  "genreId": 2
+}
+
+
+# @name remove DELETE {{baseUrl}}/{{id}}
+
+###

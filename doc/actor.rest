@@ -1,0 +1,84 @@
+@baseUrl=http://localhost:8080/actors
+@id={{create.response.body.id}}
+
+# @name getAll
+GET {{baseUrl}}
+
+###
+
+# @name create
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+    "id": 1
+    "name": "Nicholas Kage",
+    "bio": "Nicolas Kim Coppola, known professionally as Nicolas Cage, is an American actor and filmmaker. Cage has been nominated for numerous major cinematic awards, and won an Academy Award, a Golden Globe, and Screen Actors Guild Award for his performance in Leaving Las Vegas.",
+    "bornAt": "1965-01-07T18:25:43.511Z" 
+}
+###
+
+# @name update
+PUT {{baseUrl}}/{{id}}
+
+{
+  "name": "actor"
+}
+###
+
+# @name remove
+DELETE {{baseUrl}}/{{id}}
+
+###
+
+# @name associate an actor with movie
+POST {{baseUrl}}/actorsAppearance
+{
+  "actorId": 1,
+  "movieId": 1,
+  "characterName": "Chuck"
+}
+###
+
+# @name get actor movies
+GET {{baseUrl}}/actorsAppearance/{{id}}
+{
+  "id": 1,
+  "name": "Movie 1",
+}
+###
+
+# @name get actor favourite genre
+GET {{baseUrl}}/actorsFavouriteGenre/{{id}}/genre
+[
+    {
+        "name": "action",
+        "count": 2
+    }
+]
+###
+
+# @name get actor characters
+GET {{baseUrl}}/actorsCharacters/{{id}}
+[
+    {
+        "characterName": "Charlie"
+    },
+    {
+        "characterName": "Charlie"
+    },
+    {
+        "characterName": "Chuck"
+    }
+]
+###
+
+# @name create character
+POST {{baseUrl}}/{{id}}/characters
+Content-Type: application/json
+
+{
+  "movie_id": 1,
+  "character_name": "character name"
+}
+###
