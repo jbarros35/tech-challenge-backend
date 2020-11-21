@@ -28,6 +28,10 @@ interface PayloadMovie {
   releaseAt: string
   runtime: number
 }
+interface PayloadGenre {
+  movieId: number
+  genreId: number
+}
 const validatePayloadMovie: RouteOptionsResponseSchema = {
   payload: joi.object({
     name: joi.string().required(),
@@ -36,7 +40,12 @@ const validatePayloadMovie: RouteOptionsResponseSchema = {
     runtime: joi.number().required().min(1)
   })
 }
-
+const validatePayloadGender: RouteOptionsResponseSchema = {
+  payload: joi.object({
+    movieId: joi.number().required(),
+    genreId: joi.number().required(),
+  })
+}
 export const movieRoutes: ServerRoute[] = [{
   method: 'GET',
   path: '/movies',
@@ -46,6 +55,11 @@ export const movieRoutes: ServerRoute[] = [{
   path: '/movies',
   handler: post,
   options: { validate: validatePayloadMovie },
+},{
+  method: 'POST',
+  path: '/movies/gender',
+  handler: associateGender,
+  options: { validate: validatePayloadGender },
 },{
   method: 'GET',
   path: '/movies/{id}',
@@ -82,6 +96,24 @@ async function post(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lif
   const { runtime } = (req.payload as PayloadMovie)
   try {
     const id = await movies.create(name, synopsis, releaseAt, runtime)
+    const result = {
+      id,
+      path: `${req.route.path}/${id}`
+    }
+    return h.response(result).code(201)
+  }
+  catch(er: unknown){
+    console.log(er)
+    if(!isHasCode(er) || er.code !== 'ER_DUP_ENTRY') throw er
+    return Boom.conflict()
+  }
+}
+
+async function associateGender(req: Request, h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
+  const { movieId } = (req.payload as PayloadGenre)
+  const { genreId } = (req.payload as PayloadGenre)
+  try {
+    const id = await movies.setGender(genreId, movieId)
     const result = {
       id,
       path: `${req.route.path}/${id}`

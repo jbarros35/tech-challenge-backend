@@ -1,10 +1,18 @@
-import { AnySchema } from 'joi'
 import { knex } from '../util/knex'
-import { Movie } from './movies'
 
 export interface Actor {
   id: number
   name: string
+}
+
+export interface Appearances {
+  id: number
+  name: string
+}
+
+export interface FavouriteGenre {
+  name: string
+  count: number
 }
 
 export function list(): Promise<Actor[]> {
@@ -34,11 +42,25 @@ export async function createAppearance(actorId: number, movieId: number, charact
   return id
 }
 
-export function findActorAppearances(actorId: number): Promise<any> {
+export function findActorAppearances(actorId: number): Promise<Appearances[]> {
   const movieAppearances = (knex('actor_appearance')
     .join('movie', 'actor_appearance.movieId', 'movie.id')
     .select('movie.id', 'movie.name', 'actor_appearance.characterName')
     .where({actorId: actorId}))
+  return movieAppearances
+}
+
+export function findActorFavouriteGenre(actorId: number): Promise<FavouriteGenre[]> {
+  const movieAppearances = (knex('movie')
+    .join('movie_genre', 'movie.id', 'movie_genre.movieId')
+    .join('actor_appearance', 'actor_appearance.actorId', 'actor_appearance.movieId')
+    .join('actor', 'actor.id', 'actor_appearance.actorId')
+    .join('genre', 'genre.id', 'movie_genre.genreId')
+    .select('genre.name', knex.raw('count(movie.id) as count'))
+    .where({'actor.id': actorId})
+    .groupBy('genre.name')
+    .orderBy('count', 'desc')
+    .limit(1))
   return movieAppearances
 }
 

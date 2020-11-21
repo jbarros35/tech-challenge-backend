@@ -11,6 +11,7 @@ export async function up(knex: Knex): Promise<void> {
       actorId    INT(10) UNSIGNED NOT NULL,
       movieId    INT(10) UNSIGNED NOT NULL,
       characterName  VARCHAR(50) NOT NULL,
+      CONSTRAINT uk_movie_appearance UNIQUE KEY (actorId, movieId),
     CONSTRAINT fk_actor
       FOREIGN KEY (actorId) 
       REFERENCES actor(id)
