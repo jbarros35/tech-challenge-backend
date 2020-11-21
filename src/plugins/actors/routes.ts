@@ -68,6 +68,11 @@ export const actorRoutes: ServerRoute[] = [{
   options: { validate: validateParamsId },
 },{
   method: 'GET',
+  path: '/actorsCharacters/{id}',
+  handler: getCharacters,
+  options: { validate: validateParamsId },
+},{
+  method: 'GET',
   path: '/actors/{id}',
   handler: get,
   options: { validate: validateParamsId },
@@ -99,6 +104,13 @@ async function getAppearances(req: Request, _h: ResponseToolkit, _err?: Error): 
   const { id } = (req.params as ParamsId)
 
   const found = await actors.findActorAppearances(id)
+  return found || Boom.notFound()
+}
+
+async function getCharacters(req: Request, _h: ResponseToolkit, _err?: Error): Promise<Lifecycle.ReturnValue> {
+  const { id } = (req.params as ParamsId)
+
+  const found = await actors.findActorCharacters(id)
   return found || Boom.notFound()
 }
 
