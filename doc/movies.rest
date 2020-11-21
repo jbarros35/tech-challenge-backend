@@ -1,0 +1,49 @@
+@baseUrl=http://localhost:8080/movies
+@id={{create.response.body.id}}
+
+# @name getAll 
+GET {{baseUrl}}
+
+###
+
+# @name create
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "Movie Test",
+  "synopsis": "Hello movie",
+  "releaseAt": "2020-01-07T18:25:43.511Z",
+  "runtime": 180
+}
+
+###
+
+# @name getOne
+GET {{baseUrl}}/{{id}}
+
+###
+
+# @name update 
+PUT {{baseUrl}}/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Movie Test updated",
+  "synopsis": "Hello movie",
+  "releaseAt": "2020-01-07T18:25:43.511Z",
+  "runtime": 180
+}
+
+# @name associate to genre 
+POST {{baseUrl}}/genre/{{id}}
+Content-Type: application/json
+
+{
+  "genreId": 2
+}
+
+
+# @name remove DELETE {{baseUrl}}/{{id}}
+
+###
